@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".register.RegisterActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp"
+        >
+
+<!--        <TextView-->
+<!--            android:id="@+id/errorLbl"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text=""-->
+<!--            android:textAlignment="center"-->
+<!--            android:textColor="@color/colorAccent"-->
+<!--            android:textSize="18sp"-->
+<!--            android:layout_marginBottom="30dp"-->
+
+<!--            />-->
+
+        <EditText
+            android:id="@+id/loginTxt"
+            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/loginTxt"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/passwordTxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:cursorVisible="false"
+            android:ems="10"
+            android:hint="@string/passTxt"
+            android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/rePasswordTxt"
+            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/rePassTxt"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/registerBtn"
+            android:layout_width="151dp"
+            android:onClick="_registerBtn_onClick"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/colorAccent"
+            android:text="@string/register"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="30dp"/>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
