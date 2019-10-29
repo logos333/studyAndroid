@@ -26,7 +26,7 @@ public class StudentListActivity extends AppCompatActivity {
 
     ArrayList<Student> students = new ArrayList<>();
     ArrayList<Student> _students = new ArrayList<>();
-    StudentAdapter adapter, _adapter;
+    StudentAdapter listViewAdapter, _listViewAdapter, gridViewAdapter, _gridViewAdapter;
     TextView searchTxt;
     ListView lv;
     GridView gv;
@@ -48,10 +48,11 @@ public class StudentListActivity extends AppCompatActivity {
         //get student from data source(file)
         students = DataControl.getStudentsFromFile(this);
 
-        lv.setAdapter(adapter = new StudentAdapter(this, R.layout.student_list_element, students));
-        _adapter = new StudentAdapter(this, R.layout.student_list_element, _students);
+        lv.setAdapter(listViewAdapter = new StudentAdapter(this, R.layout.student_list_element, students));
+        _listViewAdapter = new StudentAdapter(this, R.layout.student_list_element, _students);
 // students
-        gv.setAdapter(adapter);
+        gv.setAdapter(gridViewAdapter = new StudentAdapter(this, R.layout.grid_view_item, students));
+        _gridViewAdapter = new StudentAdapter(this, R.layout.grid_view_item, _students);
 
         switch_view();
     }
@@ -93,14 +94,10 @@ public class StudentListActivity extends AppCompatActivity {
         //if listview is visible
         if(sp.getBoolean("ListView_Visibility", true)) {
             lv.setVisibility(View.GONE);
-            searchTxt.setVisibility(View.GONE);
-
             gv.setVisibility(View.VISIBLE);
         } else {
             gv.setVisibility(View.GONE);
-
             lv.setVisibility(View.VISIBLE);
-            searchTxt.setVisibility(View.VISIBLE);
         }
     }
 
@@ -117,7 +114,10 @@ public class StudentListActivity extends AppCompatActivity {
     }
 
     void apply() {
-        ((StudentAdapter) lv.getAdapter()).notifyDataSetChanged();
+        if(lv.getVisibility() == View.VISIBLE)
+            ((StudentAdapter) lv.getAdapter()).notifyDataSetChanged();
+        else
+            ((StudentAdapter) gv.getAdapter()).notifyDataSetChanged();
     }
 
     TextWatcher textWatcher = new TextWatcher() {
@@ -137,19 +137,27 @@ public class StudentListActivity extends AppCompatActivity {
             String text = s.toString();
             if (!s.toString().equals("")) {
                 for (Student student : students) {
-                    if (student.getSid().contains(text) || student.getSname().contains(text)) {
+                    if (student.getSid().toLowerCase().contains(text) || student.getSname().toLowerCase().contains(text)) {
                         _students.add(student);
                     }
                 }
 
-               lv.setAdapter(_adapter);
+               if(lv.getVisibility() == View.VISIBLE)
+                   lv.setAdapter(_listViewAdapter);
+               else
+                   gv.setAdapter(_gridViewAdapter);
+
             } else {
 
-                lv.setAdapter(adapter);
+                if(lv.getVisibility() == View.VISIBLE)
+                    lv.setAdapter(listViewAdapter);
+                else
+                    gv.setAdapter(gridViewAdapter);
             }
             apply();
         }
     };
+
 
     AdapterView.OnItemClickListener onListItemClick = new AdapterView.OnItemClickListener() {
         @Override
