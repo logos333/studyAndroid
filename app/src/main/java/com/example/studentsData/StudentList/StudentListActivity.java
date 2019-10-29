@@ -1,42 +1,59 @@
 package com.example.studentsData.StudentList;
 
-import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.studentsData.MyToast;
 import com.example.studentsData.R;
 
 import java.util.ArrayList;
 
-public class StudentListActivity extends ListActivity {
+public class StudentListActivity extends AppCompatActivity {
     public static final String STUDENTS_DATA_FILE = "students.dat";
 
     ArrayList<Student> students = new ArrayList<>();
     ArrayList<Student> _students = new ArrayList<>();
     StudentAdapter adapter, _adapter;
     TextView searchTxt;
+    ListView lv;
+    GridView gv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_students);
 
-        getListView().setLongClickable(true);
-        getListView().setOnItemLongClickListener(onItemLongClickListener);
+        gv = findViewById(R.id.gridView);
+        lv = findViewById(R.id.list);
+        lv.setOnItemClickListener(onListItemClick);
+        lv.setLongClickable(true);
+        lv.setOnItemLongClickListener(onItemLongClickListener);
         searchTxt = findViewById(R.id.searchTxt);
         searchTxt.addTextChangedListener(textWatcher);
 //        writeData(new Student("16210525", "Tim", "male", 21));
+
+        //get student from data source(file)
         students = DataControl.getStudentsFromFile(this);
-        setListAdapter(adapter = new StudentAdapter(this, R.xml.student_list_element, students));
-        _adapter = new StudentAdapter(this, R.xml.student_list_element, _students);
+
+        lv.setAdapter(adapter = new StudentAdapter(this, R.layout.student_list_element, students));
+        _adapter = new StudentAdapter(this, R.layout.student_list_element, _students);
+// students
+        gv.setAdapter(adapter);
+
+        switch_view();
     }
 
     @Override
@@ -45,11 +62,47 @@ public class StudentListActivity extends ListActivity {
         initialData();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_view, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        //saving the changed mode of visibility of listview
+        getSharedPreferences("ViewPreferences", MODE_PRIVATE).edit().putBoolean("ListView_Visibility", lv.getVisibility()==View.VISIBLE).apply();
+
+        //item is only one (switch view), so i will just make one method for it
+        switch_view();
+        return super.onOptionsItemSelected(item);
+    }
+
 //    @Override
 //    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 //        super.onCreateContextMenu(menu, v, menuInfo);
 //        menu.add(1, 1, 0, "First");
 //    }
+
+    /**
+     * switching beetween listview and gridview according to sharedpreferences in the "ViewPreferences" file
+     */
+    private void switch_view() {
+        SharedPreferences sp = getSharedPreferences("ViewPreferences", MODE_PRIVATE);
+
+        //if listview is visible
+        if(sp.getBoolean("ListView_Visibility", true)) {
+            lv.setVisibility(View.GONE);
+            searchTxt.setVisibility(View.GONE);
+
+            gv.setVisibility(View.VISIBLE);
+        } else {
+            gv.setVisibility(View.GONE);
+
+            lv.setVisibility(View.VISIBLE);
+            searchTxt.setVisibility(View.VISIBLE);
+        }
+    }
 
 
     private void initialData() {
@@ -63,19 +116,8 @@ public class StudentListActivity extends ListActivity {
         startActivity(intent);
     }
 
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        Intent intent = new Intent(getApplicationContext(), AddStudentActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("student", students.get(position));
-        startActivity(intent);
-    }
-
-
     void apply() {
-        ((StudentAdapter) getListAdapter()).notifyDataSetChanged();
+        ((StudentAdapter) lv.getAdapter()).notifyDataSetChanged();
     }
 
     TextWatcher textWatcher = new TextWatcher() {
@@ -100,12 +142,22 @@ public class StudentListActivity extends ListActivity {
                     }
                 }
 
-                setListAdapter(_adapter);
+               lv.setAdapter(_adapter);
             } else {
 
-                setListAdapter(adapter);
+                lv.setAdapter(adapter);
             }
             apply();
+        }
+    };
+
+    AdapterView.OnItemClickListener onListItemClick = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(getApplicationContext(), AddStudentActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("student", students.get(position));
+            startActivity(intent);
         }
     };
 
@@ -116,5 +168,8 @@ public class StudentListActivity extends ListActivity {
            return true;
        }
    };
+
+
+
 }
 

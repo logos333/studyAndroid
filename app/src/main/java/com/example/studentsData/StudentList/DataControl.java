@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class DataControl {
 
@@ -40,6 +41,7 @@ public abstract class DataControl {
         return students;
     }
 
+    @org.jetbrains.annotations.Contract(pure = true)
     public static ArrayList<Student> getStudents() {
         return students;
     }

@@ -53,6 +53,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/loginTxt" />
 
+<!--    <com.google.android.material.textfield.TextInputLayout>-->
+<!--        -->
+<!--    </com.google.android.material.textfield.TextInputLayout>-->
+
     <EditText
         android:text="123"
         android:id="@+id/passwordTxt"
