@@ -1,10 +1,12 @@
 package com.example.studentsData.StudentList;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -46,6 +48,7 @@ public class StudentAdapter extends ArrayAdapter<Student> {
         //setting the student's info
         viewHolder.sidView.setText(student.getSid());
         viewHolder.snameView.setText(student.getSname());
+        viewHolder.imageView.setImageURI(Uri.parse(student.getPhoto()));
 
         return convertView;
     }
@@ -54,10 +57,12 @@ public class StudentAdapter extends ArrayAdapter<Student> {
     //inner private class for optimize findViewById() method
     private class ViewHolder {
         final TextView snameView, sidView;
+        final ImageView imageView;
 
         ViewHolder(View view) {
             sidView = view.findViewById(R.id.sid);
             snameView =  view.findViewById(R.id.sname);
+            imageView = view.findViewById(R.id.imageView);
         }
     }
 

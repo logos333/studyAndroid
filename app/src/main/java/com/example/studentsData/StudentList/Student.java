@@ -1,5 +1,7 @@
 package com.example.studentsData.StudentList;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 
 public class Student implements Serializable {
@@ -10,16 +12,18 @@ public class Student implements Serializable {
     private String sname;
     private String ssex;
     private String dateOfBirth;
+    private String photo;
 
 
     private int languages;
 
-    public Student(String sid, String sname, String ssex, String dateOfBirth, int languages) {
+    public Student(String sid, String sname, String ssex, String dateOfBirth, int languages, String photo) {
         this.sid = sid;
         this.sname = sname;
         this.ssex = ssex;
         this.dateOfBirth = dateOfBirth;
         this.languages = languages;
+        this.photo = photo;
     }
 
     public String getSid() {
@@ -60,5 +64,13 @@ public class Student implements Serializable {
 
     public void setLanguages(int languages) {
         this.languages = languages;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }

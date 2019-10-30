@@ -39,8 +39,10 @@ public class StudentListActivity extends AppCompatActivity {
         gv = findViewById(R.id.gridView);
         lv = findViewById(R.id.list);
         lv.setOnItemClickListener(onListItemClick);
+        gv.setOnItemClickListener(onListItemClick);
         lv.setLongClickable(true);
         lv.setOnItemLongClickListener(onItemLongClickListener);
+        gv.setOnItemLongClickListener(onItemLongClickListener);
         searchTxt = findViewById(R.id.searchTxt);
         searchTxt.addTextChangedListener(textWatcher);
 //        writeData(new Student("16210525", "Tim", "male", 21));
