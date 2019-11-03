@@ -23,13 +23,19 @@ import java.util.ArrayList;
 
 public class StudentListActivity extends AppCompatActivity {
     public static final String STUDENTS_DATA_FILE = "students.dat";
+    private static final String LISTVIEW_VISIBILITY = "ListView_Visibility";
+    private static final String VIEW_PREFERENCES = "ViewPreferences";
 
     ArrayList<Student> students = new ArrayList<>();
     ArrayList<Student> _students = new ArrayList<>();
-    StudentAdapter listViewAdapter, _listViewAdapter, gridViewAdapter, _gridViewAdapter;
-    TextView searchTxt;
     ListView lv;
     GridView gv;
+
+    //each view(listview and gridView) has 2 adapters:
+    //1: for main data story
+    //2: temp data for search engine
+    StudentAdapter listViewAdapter, _listViewAdapter, gridViewAdapter, _gridViewAdapter;
+    TextView searchTxt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +53,10 @@ public class StudentListActivity extends AppCompatActivity {
         searchTxt.addTextChangedListener(textWatcher);
 //        writeData(new Student("16210525", "Tim", "male", 21));
 
-        //get student from data source(file)
-        students = DataControl.getStudentsFromFile(this);
+        students = DBHelper.getStudentList(this);
 
         lv.setAdapter(listViewAdapter = new StudentAdapter(this, R.layout.student_list_element, students));
         _listViewAdapter = new StudentAdapter(this, R.layout.student_list_element, _students);
-// students
         gv.setAdapter(gridViewAdapter = new StudentAdapter(this, R.layout.grid_view_item, students));
         _gridViewAdapter = new StudentAdapter(this, R.layout.grid_view_item, _students);
 
@@ -74,7 +78,7 @@ public class StudentListActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         //saving the changed mode of visibility of listview
-        getSharedPreferences("ViewPreferences", MODE_PRIVATE).edit().putBoolean("ListView_Visibility", lv.getVisibility()==View.VISIBLE).apply();
+        getSharedPreferences(VIEW_PREFERENCES, MODE_PRIVATE).edit().putBoolean(LISTVIEW_VISIBILITY, lv.getVisibility()==View.VISIBLE).apply();
 
         //item is only one (switch view), so i will just make one method for it
         switch_view();
@@ -91,10 +95,10 @@ public class StudentListActivity extends AppCompatActivity {
      * switching beetween listview and gridview according to sharedpreferences in the "ViewPreferences" file
      */
     private void switch_view() {
-        SharedPreferences sp = getSharedPreferences("ViewPreferences", MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences(VIEW_PREFERENCES, MODE_PRIVATE);
 
         //if listview is visible
-        if(sp.getBoolean("ListView_Visibility", true)) {
+        if(sp.getBoolean(LISTVIEW_VISIBILITY, true)) {
             lv.setVisibility(View.GONE);
             gv.setVisibility(View.VISIBLE);
         } else {
@@ -105,7 +109,7 @@ public class StudentListActivity extends AppCompatActivity {
 
 
     private void initialData() {
-        students = DataControl.getStudentsFromFile(this);
+        students = DBHelper.getStudentList(this);
         apply();
     }
 
@@ -122,6 +126,8 @@ public class StudentListActivity extends AppCompatActivity {
             ((StudentAdapter) gv.getAdapter()).notifyDataSetChanged();
     }
 
+
+    //textWatcher for search
     TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {

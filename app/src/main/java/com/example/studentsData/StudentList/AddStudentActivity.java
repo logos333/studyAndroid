@@ -9,8 +9,6 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -28,23 +26,17 @@ import android.text.format.DateUtils;
 import com.example.studentsData.MyToast;
 import com.example.studentsData.R;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Calendar;
 
 public class AddStudentActivity extends AppCompatActivity {
+    private static final String LOGS = "MyLogs";
 
     SeekBar seekBar;
     Button saveBtn, deleteBtn;
     TextView birthTxt, languageTxt, idTxt, nameTxt;
     RadioButton male, female;
-    File directory;
     ImageButton imageButton;
     Uri outputFileUri;
 
@@ -184,7 +176,7 @@ public class AddStudentActivity extends AppCompatActivity {
             throw new Exception("Name cannot be empty!");
         }
         if (birthTxt.getText().toString().equals("")) {
-            throw new Exception("Birth day cannot be empty!");
+            throw new Exception("Birthday cannot be empty!");
         }
 
 
@@ -205,9 +197,9 @@ public class AddStudentActivity extends AppCompatActivity {
 
     protected void addStudent(Student student) {
         try {
-            if (deleteBtn.isEnabled())
-                DataControl.deleteStudent(student.getSid());
-            DataControl.addStudent(student);
+            if (deleteBtn.getVisibility() == View.VISIBLE)
+                DBHelper.deleteStudent(student.getSid());
+            DBHelper.addStudent(student);
         } catch (Exception ex) {
             MyToast.showMessage(this, ex.getMessage());
         }
@@ -215,7 +207,7 @@ public class AddStudentActivity extends AppCompatActivity {
 
     public void deleteBtn_Click(View view) {
         try {
-            if (DataControl.deleteStudent(idTxt.getText().toString()))
+            if (DBHelper.deleteStudent(idTxt.getText().toString()))
                 MyToast.showMessage(this, "DELETED!");
             else
                 MyToast.showMessage(this, "Can't find student with id = " + idTxt.getText().toString());
@@ -246,7 +238,7 @@ public class AddStudentActivity extends AppCompatActivity {
         builder.setTitle("Select source:");
         builder.setPositiveButton("Camera", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which) {                        //Open Camera
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri = generateFileUri());
                 startActivityForResult(intent, CAMERA);
@@ -254,7 +246,7 @@ public class AddStudentActivity extends AppCompatActivity {
         });
         builder.setNeutralButton("Gallery", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which) {                        //Open Gallery
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), GALLERY);
@@ -273,7 +265,8 @@ public class AddStudentActivity extends AppCompatActivity {
                 applyImage();
 
             } else if (resultCode == RESULT_CANCELED) {
-                Log.d("MyLogs", "Canceled");
+                MyToast.showMessage(this, "Canceled");
+                Log.d(LOGS, "Canceled");
             }
             return;
         }
@@ -289,17 +282,24 @@ public class AddStudentActivity extends AppCompatActivity {
 
     }
 
+
+    /**
+     * saving selected image, scale down it, compress and save to the app's /Photos
+     */
     private void applyImage() {
         try {
-            /*Bitmap bitmap = scaleDown(MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputFileUri), 120, true);
-            new File(outputFileUri.toString()).delete();
 
-            File file = new File(generateFileUri().toString());
-            FileOutputStream fos = new FileOutputStream(file);
-           // file.createNewFile();
-            outputFileUri = Uri.fromFile(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, fos);
-*/
+            //------------don't work! i don't know why
+//            Bitmap bitmap = scaleDown(MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputFileUri), 120, true);
+//            new File(outputFileUri.toString()).delete();
+//
+//            File file = new File(generateFileUri().toString());
+//            FileOutputStream fos = new FileOutputStream(file);
+//           // file.createNewFile();
+//            outputFileUri = Uri.fromFile(file);
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, fos);
+
+
             Bitmap bitmap = scaleDown(MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputFileUri), 1200, true);
 
             String path = getExternalFilesDir(Environment.DIRECTORY_PICTURES).getPath()+"/photo_"
@@ -315,16 +315,16 @@ public class AddStudentActivity extends AppCompatActivity {
 
         } catch (Exception ex) {
             MyToast.showMessage(this, ex.getMessage());
+            Log.d(LOGS, ex.getMessage());
         }
 
 
         getSharedPreferences("Preferences", MODE_PRIVATE).edit().putString("image", outputFileUri.toString()).apply();
-        Log.d("MyLogs", outputFileUri.toString());
+        Log.d(LOGS, outputFileUri.toString());
         imageButton.setImageURI(outputFileUri);
     }
 
-    private Bitmap scaleDown(@NonNull Bitmap realImage, float maxImageSize,
-                             boolean filter) {
+    private Bitmap scaleDown(@NonNull Bitmap realImage, float maxImageSize, boolean filter) {
         float ratio = Math.min(
                 maxImageSize / realImage.getWidth(),
                 maxImageSize / realImage.getHeight());
@@ -339,7 +339,7 @@ public class AddStudentActivity extends AppCompatActivity {
     private Uri generateFileUri() {
         File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "photo_"
                 + System.currentTimeMillis() + ".jpg");
-        Log.d("MyLogs", "fileName = " + file);
+        Log.d(LOGS, "fileName = " + file);
         return Uri.fromFile(file);
     }
 

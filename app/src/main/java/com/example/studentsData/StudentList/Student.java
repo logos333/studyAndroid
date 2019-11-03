@@ -1,5 +1,6 @@
 package com.example.studentsData.StudentList;
 
+import android.content.ContentValues;
 import android.net.Uri;
 
 import java.io.Serializable;
@@ -72,5 +73,17 @@ public class Student implements Serializable {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public ContentValues getContentValues() {
+        ContentValues cv = new ContentValues();
+        cv.put(DBHelper.KEY_STUDENT_ID, sid);
+        cv.put(DBHelper.KEY_NAME, sname);
+        cv.put(DBHelper.KEY_SEX, ssex);
+        cv.put(DBHelper.KEY_BIRTHDAY, dateOfBirth);
+        cv.put(DBHelper.KEY_LANGUAGES , languages);
+        cv.put(DBHelper.KEY_IMAGE, photo);
+
+        return cv;
     }
 }
