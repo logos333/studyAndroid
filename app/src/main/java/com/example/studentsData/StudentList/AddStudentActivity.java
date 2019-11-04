@@ -110,7 +110,8 @@ public class AddStudentActivity extends AppCompatActivity {
         //setting languages seekBar
         seekBar.setProgress(student.getLanguages());
         //setting image
-        imageButton.setImageURI(Uri.parse(student.getPhoto()));
+        if(student.getPhoto() != null)
+            imageButton.setImageURI(Uri.parse(student.getPhoto()));
     }
 
 
