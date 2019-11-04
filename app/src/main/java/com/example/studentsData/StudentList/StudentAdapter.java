@@ -48,7 +48,10 @@ public class StudentAdapter extends ArrayAdapter<Student> {
         //setting the student's info
         viewHolder.sidView.setText(student.getSid());
         viewHolder.snameView.setText(student.getSname());
-        viewHolder.imageView.setImageURI(Uri.parse(student.getPhoto()));
+        if (student.getPhoto() == null)
+            viewHolder.imageView.setImageDrawable(inflater.getContext().getDrawable(R.drawable.ic_portrait_black_24dp));
+        else
+            viewHolder.imageView.setImageURI(Uri.parse(student.getPhoto()));
 
         return convertView;
     }
@@ -61,7 +64,7 @@ public class StudentAdapter extends ArrayAdapter<Student> {
 
         ViewHolder(View view) {
             sidView = view.findViewById(R.id.sid);
-            snameView =  view.findViewById(R.id.sname);
+            snameView = view.findViewById(R.id.sname);
             imageView = view.findViewById(R.id.imageView);
         }
     }

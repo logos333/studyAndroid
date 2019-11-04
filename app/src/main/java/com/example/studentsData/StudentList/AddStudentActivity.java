@@ -32,6 +32,7 @@ import java.util.Calendar;
 
 public class AddStudentActivity extends AppCompatActivity {
     private static final String LOGS = "MyLogs";
+    public static final String PREFERENCES = "Preferences";
 
     SeekBar seekBar;
     Button saveBtn, deleteBtn;
@@ -61,6 +62,8 @@ public class AddStudentActivity extends AppCompatActivity {
 
         seekBar.setOnSeekBarChangeListener(seekBar_Change);
 
+        getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit().putString("image", null).apply();
+
         Student student;
         if ((student = (Student) getIntent().getSerializableExtra("student")) != null) {
             initialData(student);
@@ -69,19 +72,21 @@ public class AddStudentActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-
-        if (outputFileUri == null)
-            outputFileUri = Uri.parse(getSharedPreferences("Preferences", MODE_PRIVATE).getString("image", null));
-
-        outState.putString("imageButton", outputFileUri.toString());
+        String image = getSharedPreferences(PREFERENCES, MODE_PRIVATE).getString("image", null);
+        if (image != null) {
+            outputFileUri = Uri.parse(image);
+            outState.putString("imageButton", outputFileUri.toString());
+        }
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState.getString("imageButton") != null)
+        if (savedInstanceState.getString("imageButton") != null) {
             imageButton.setImageURI(Uri.parse(savedInstanceState.getString("imageButton")));
+            getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit().putString("image", savedInstanceState.getString("imageButton")).apply();
+        }
 
     }
 
@@ -188,7 +193,7 @@ public class AddStudentActivity extends AppCompatActivity {
                 male.isChecked() ? "male" : "female",
                 birthTxt.getText().toString(),
                 seekBar.getProgress(),
-                getSharedPreferences("Preferences", MODE_PRIVATE).getString("image", null));
+                getSharedPreferences(PREFERENCES, MODE_PRIVATE).getString("image", null));
 
         addStudent(student);
 
@@ -319,7 +324,7 @@ public class AddStudentActivity extends AppCompatActivity {
         }
 
 
-        getSharedPreferences("Preferences", MODE_PRIVATE).edit().putString("image", outputFileUri.toString()).apply();
+        getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit().putString("image", outputFileUri.toString()).apply();
         Log.d(LOGS, outputFileUri.toString());
         imageButton.setImageURI(outputFileUri);
     }
