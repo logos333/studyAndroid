@@ -1,6 +1,5 @@
 package com.example.studentsData.StudentList;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,8 +10,6 @@ import androidx.annotation.Nullable;
 
 import com.example.studentsData.MyToast;
 import com.example.studentsData.R;
-
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class DBHelper extends SQLiteOpenHelper {
@@ -58,6 +55,7 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    //this method used when AddStudentActivity created
     public static ArrayList<Student> getStudentList(StudentListActivity _context) {
         students.clear();
         context = _context;
